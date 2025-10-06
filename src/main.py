@@ -65,43 +65,80 @@ def main():
         resolver = IdResolver()
         did = resolver.handle.resolve(TARGET_HANDLE)
         profile = get_profile(did)
+
         if not profile:
             print(f"Could not fetch profile, exiting...")
             return
+        
         print(f"Retreived profile: {profile.handle}")
+
         # Get followers and go through them all
         try:
             params = models.AppBskyGraphGetFollowers.Params( actor = did, limit = REPORT_LIMIT )
             followers = client.app.bsky.graph.get_followers(params)
         except Exception as e:
             print(f"Failed to get followers for account {profile.handle}: {e}")
+            return
+        
         enabled = 0
         active = 0
         ghost = 0
+
+        follower_data = []
+
         while True:
             enabled += len(followers.followers)
             for follower in followers.followers:
-                cached = db.get_cached_follower(follower.did)
-                last_post = None
+                last_posted_at = None
                 
-                if not cached or datetime.fromisoformat(cached["updated_at"]) < datetime.now(timezone.utc) - timedelta(days = 7):
-                    last_post = get_last_post(follower.did)
-                    last_posted_at = last_post.indexed_at if last_post else None
-                    db.save_follower(follower.did, follower.handle, last_posted_at)
-                else:
-                    #used cached info
-                    last_posted_at = cached["last_posted_at"]
+                last_post = get_last_post(follower.did)
+                last_posted_at = last_post.indexed_at if last_post else None
+
+                # Append to datatype
+                follower.last_posted_at = last_posted_at
+
+                # Store follower's data
+                follower_data.append(follower)
                 
+                # Count active/ghost accounts
                 if last_posted_at and datetime.fromisoformat(last_posted_at) > calc_last_month():
                     active += 1
                 elif not last_posted_at:
                     ghost += 1
+
+
             if not followers.cursor:
                 break
+
             print(f"Processed {enabled}/{profile.followers_count}...")
+
             params = models.AppBskyGraphGetFollowers.Params(actor = did, cursor = followers.cursor, limit = 25)
             followers = client.app.bsky.graph.get_followers(params)
+            
             time.sleep(0.05)
+
+        # calculate disabled followers
+        disabled = profile.followers_count - enabled
+
+        # Create out snapshot
+        snapshot_id = db.create_snapshot(account_handle=profile.handle,
+                                            total_followers=profile.followers_count,
+                                            active_count=active,
+                                            never_posted_count=ghost,
+                                            disabled_count=disabled)
+        print(f"Saving snapshot {snapshot_id} with {len(follower_data)} followers...")
+
+        # Add all followers to this snapshot
+        for follower in follower_data:
+            db.add_follower(snapshot_id=snapshot_id,
+                            did=follower.did,
+                            handle=follower.handle,
+                            last_posted_at=follower.last_posted_at,
+                            display_name=follower.display_name)
+            
+        db.conn.commit()
+        print(f"Snapshot saved!")
+
         report(profile.followers_count, profile.follows_count, enabled, active, ghost)
 
 if __name__ == "__main__":

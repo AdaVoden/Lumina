@@ -10,9 +10,9 @@ X Fetch profile info (followers/follows)
 
 X Iterate through followers and check activity
 
-Improve error handling (timeouts, 404s, deleted accounts)
+X Improve error handling (timeouts, 404s, deleted accounts)
 
-Add SQLite database for local snapshot storage
+X Add SQLite database for local snapshot storage
 
     Table: snapshots(date, follower_count, active_followers, total_followers)
 

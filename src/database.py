@@ -58,8 +58,8 @@ class Database():
         return self.cur.lastrowid
     
     def get_follower_changes(db, snapshot_id):
-        # This should probably be done in SQL
         """Compare current snapshot to previous snapshot"""
+        # This should probably be done in SQL
         cur = db.cur
 
         # Get current snapshot

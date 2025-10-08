@@ -79,7 +79,7 @@ def main():
         except Exception as e:
             print(f"Failed to get followers for account {profile.handle}: {e}")
             return
-        
+        processed = 0
         enabled = 0
         active = 0
         ghost = 0
@@ -87,6 +87,9 @@ def main():
         follower_data = []
 
         while True:
+            # Number of acccounts requested
+            processed += REPORT_LIMIT
+            # Number of accounts returned, who aren't deleted/disabled
             enabled += len(followers.followers)
             for follower in followers.followers:
                 last_posted_at = None
@@ -110,7 +113,7 @@ def main():
             if not followers.cursor:
                 break
 
-            print(f"Processed {enabled}/{profile.followers_count}...")
+            print(f"Processed {processed}/{profile.followers_count}...")
 
             params = models.AppBskyGraphGetFollowers.Params(actor = did, cursor = followers.cursor, limit = 25)
             followers = client.app.bsky.graph.get_followers(params)

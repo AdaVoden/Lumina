@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block body %}
+
+<section class="column">
+    <div class="card" id="stats">
+        <div id="followers">
+            <p>Followers:</p>{{followers}}
+        </div>
+        <div id="active">
+            <p>Active:</p>{{active}}
+        </div>
+        <div id="disabled">
+            <p>Disabled:</p>{{disabled}}
+        </div>
+        <div id="never posted">
+            <p>Never Posted:</p>{{never_posted}}
+        </div>
+    </div>
+</section>
+
+<section class="column">
+    <div class="card" id="newfollowers">
+
+    </div>
+    <div class="card" id="unfollows">
+
+    </div>
+</section>
+
+{% endblock %}

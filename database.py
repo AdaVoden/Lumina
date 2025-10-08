@@ -100,6 +100,10 @@ class Database():
             )
         # commit at the _end_ of the snapshot, not per-follower
 
+    def get_last_snapshot(self):
+        snapshot = self.get_recent_snapshots(limit=1)
+        return snapshot[0]
+        
     def get_recent_snapshots(self, limit=30):
         self.cur.execute("""
                     SELECT id, timestamp, account_handle, total_followers, active_count, never_posted_count, disabled_count

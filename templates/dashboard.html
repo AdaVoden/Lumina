@@ -2,28 +2,37 @@
 {% block body %}
 
 <section class="column">
-    <div class="card" id="stats">
-        <div id="followers">
-            <p>Followers:</p>{{followers}}
+    <div class="card" id="stats-card">
+
+        <div class="stats" id="stat-followers">
+            <h3 class="stats-label">Followers</h3>
+            <div class="stats-value">{{followers}}</div>
         </div>
-        <div id="active">
-            <p>Active:</p>{{active}}
+
+        <div class="stats" id="stat-active">
+            <h3 class="stats-label">Active</h3>
+            <div class="stats-value">{{active}}</div>
         </div>
-        <div id="disabled">
-            <p>Disabled:</p>{{disabled}}
+
+        <div class="stats" id="stat-disabled">
+            <h3 class="stats-label">Disabled</h3>
+            <div class="stats-value">{{disabled}}</div>
         </div>
-        <div id="never posted">
-            <p>Never Posted:</p>{{never_posted}}
+
+        <div class="stats" id="stat-ghost">
+            <h3 class="stats-label">Never Posted</h3>
+            <div class="stats-value">{{never_posted}}</div>
         </div>
+
     </div>
 </section>
 
 <section class="column">
     <div class="card" id="newfollowers">
-
+        <header class="stats-label">New Followers</header>
     </div>
     <div class="card" id="unfollows">
-
+        <header class="stats-label">Unfollows</header>
     </div>
 </section>
 

@@ -1,22 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
     <head>
+
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <meta name="color-scheme" content="light dark">
         <!-- Pico CSS inclusion for basic styling -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.violet.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
         <title>Lumina</title>
+
     </head>
+
     <body>
-        <header>
+
+        <header id="topbar">
             <h1>Lumina</h1>
-            <p>@{{ handle }}</p>
-            <p>Updated: {{ last_updated }}</p>
+            <div class="account">
+                <p>Account: @{{ handle }}</p>
+                <p>Updated: {{ last_updated }} UTC</p>
+            </div>
         </header>
+
         <main class="container">
             {% block body %}
             {% endblock %}
         </main>
+
     </body>
+
 </html>

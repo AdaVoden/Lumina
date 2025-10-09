@@ -30,9 +30,34 @@
 <section class="column">
     <div class="card" id="newfollowers">
         <header class="stats-label">New Followers</header>
+        {% for did, handle in new_followers.items() %}
+            <div class="follower-item">
+                <img src="https://via.placeholder.com/40" alt="avatar">
+                <a href="https://bsky.app/profile/{{ handle }}" target="_blank">
+                    @{{ handle }}
+                </a>
+            </div>
+        {% endfor %}
+
+        {% if new_followers|length > 5 %}
+            <p>... and {{ new_followers|length - 5}} more</p>
+        {% endif %}
     </div>
+
     <div class="card" id="unfollows">
         <header class="stats-label">Unfollows</header>
+        {% for did, handle in unfollows.items() %}
+            <div class="follower-item">
+                <img src="https://via.placeholder.com/40" alt="avatar">
+                <a href="https://bsky.app/profile/{{ handle }}" target="_blank">
+                    @{{ handle }}
+                </a>
+            </div>
+        {% endfor %}
+        
+        {% if unfollows|length > 5 %}
+            <p>... and {{ unfollows|length - 5}} more</p>
+        {% endif %}
     </div>
 </section>
 

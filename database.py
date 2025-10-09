@@ -57,39 +57,40 @@ class Database():
         self.conn.commit()
         return self.cur.lastrowid
     
-    def get_follower_changes(db, snapshot_id):
+    def get_follower_changes(self, snapshot_id):
         """Compare current snapshot to previous snapshot"""
-        # This should probably be done in SQL
-        cur = db.cur
+        cur = self.cur
 
-        # Get current snapshot
         cur.execute("""
-                    SELECT did, handle, last_posted_at FROM snapshot_followers
-                    WHERE snapshot_id = ?
+                    SELECT id FROM snapshots
+                    WHERE id < ?
+                    ORDER BY id DESC
+                    LIMIT 1
                     """, (snapshot_id,))
-        current = {row[0]: {'handle': row[1], 'last_posted_at': row[2]} for row in cur.fetchall()}
         
-        # Get previous snapshot
-        cur.execute("""
-                    SELECT did, handle, last_posted_at FROM snapshot_followers
-                    WHERE snapshot_id = (
-                        SELECT id FROM snapshots
-                        WHERE id < ?
-                        ORDER BY id DESC
-                        LIMIT 1
-                    )
-                    """, (snapshot_id,))
-        prev = cur.fetchone()
+        prev_snapshot = cur.fetchone()
+        # If there is no previous snapshot, return nothing
+        if not prev_snapshot:
+            return {}, {}
         
-        if not prev:
-            # First snapshot, everyone is new!
-            return list(current.keys()), []
-        
-        prev = {row[0]: {'handle': row[1], 'last_posted_at': row[2]} for row in cur.fetchall()}
+        prev_id = prev_snapshot[0]
 
-        new_followers = {did: current[did]['handle'] for did in current if did not in prev}
-        unfollowed = {did: prev[did]['handle'] for did in prev if did not in current}
-    
+        # Current EXCEPT previous
+        cur.execute("""
+                    SELECT did, handle FROM snapshot_followers WHERE snapshot_id = ?
+                    EXCEPT
+                    SELECT did, handle FROM snapshot_followers WHERE snapshot_id = ?
+                    """, (snapshot_id, prev_id))
+        new_followers = {row[0]: row[1] for row in cur.fetchall()}
+
+        # Previous EXCEPT current
+        cur.execute("""
+                    SELECT did, handle FROM snapshot_followers WHERE snapshot_id = ?
+                    EXCEPT
+                    SELECT did, handle FROM snapshot_followers WHERE snapshot_id = ?
+                    """, (prev_id, snapshot_id))
+        unfollowed = {row[0]: row[1] for row in cur.fetchall()}
+
         return new_followers, unfollowed
 
     def add_follower(self, snapshot_id, did, handle, last_posted_at, display_name):
@@ -103,6 +104,15 @@ class Database():
     def get_last_snapshot(self):
         snapshot = self.get_recent_snapshots(limit=1)
         return snapshot[0]
+    
+    def get_last_snapshot_id(self):
+        self.cur.execute("""
+                        SELECT id FROM snapshots
+                        ORDER BY timestamp DESC
+                        LIMIT 1
+                        """)
+        return self.cur.fetchone()[0]
+
         
     def get_recent_snapshots(self, limit=30):
         self.cur.execute("""

@@ -152,7 +152,10 @@ class Database():
     def get_snapshot_series(self, limit=100):
         """Return chronological series for charing: oldest->newest."""
         self.cur.execute("""
-            SELECT timestamp, total_followers, active_count
+            SELECT 
+                         strftime('%Y-%m-%d', timestamp) as date, 
+                         total_followers, 
+                         active_count
             FROM snapshots
             ORDER BY timestamp ASC
             LIMIT ?                 

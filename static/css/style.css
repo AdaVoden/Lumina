@@ -43,8 +43,12 @@
     color: black;
     padding: 20px;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 4px;
     margin: 10px;
+}
+
+.graph-container {
+    min-width: 400px;
 }
 
 .stats-label {
@@ -71,4 +75,18 @@
 
 #stat-ghost {
     color: #fbbf24;
+}
+
+.follower-changes {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: left;
+}
+
+.follower-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
 }

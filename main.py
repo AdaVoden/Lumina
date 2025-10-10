@@ -48,7 +48,7 @@ def posted_in_last_month(post):
 def is_account_ghost(post):
     return not post
     
-def report(followers, follows, enabled, active, ghost):
+def report(followers, follows, enabled, active, ghost, new_followers, unfollows):
     print(f"=========== Report ===========")
     print(f"Followers: {followers}")
     print(f"Follows: {follows}")
@@ -58,7 +58,18 @@ def report(followers, follows, enabled, active, ghost):
     print(f"Active: {active}")
     print(f"Active %: {(active/followers)*100:.2f}%")
     print(f"Never Posted: {ghost}")
-
+    print(f"=========== New Followers ===========")
+    if new_followers:
+        for _, handle in new_followers.items():
+            print(f"+ {handle}")
+    else:
+        print("No change!")
+    print(f"=========== Unfollows ===========")
+    if unfollows:
+        for _, handle in unfollows.items():
+            print(f"- {handle}")
+    else:
+        print("No change!")
 def main():
     with Database() as db:
         # Resolve DID for future use
@@ -142,7 +153,8 @@ def main():
         db.conn.commit()
         print(f"Snapshot saved!")
 
-        report(profile.followers_count, profile.follows_count, enabled, active, ghost)
+        new_followers, unfollows = db.get_follower_changes(snapshot_id)
+        report(profile.followers_count, profile.follows_count, enabled, active, ghost, new_followers, unfollows)
 
 if __name__ == "__main__":
     main()

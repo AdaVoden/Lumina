@@ -25,39 +25,78 @@
         </div>
 
     </div>
+
+    <div class="card graph-container">
+        <canvas id="follower-time-chart"></canvas>
+    </div>
 </section>
+<script>
+    const data = {{ timeseries | tojson }};
+    
+    const ctx = document.getElementById('follower-time-chart');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.map(d => d.timestamp),
+            datasets: [{
+                label: 'Total Followers',
+                data: data.map(d => d.total_followers),
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }, {
+                label: 'Active Followers',
+                data: data.map(d => d.active_count),
+                borderColor: 'rgb(255, 99, 132)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
 <section class="column">
     <div class="card" id="newfollowers">
         <header class="stats-label">New Followers</header>
-        {% for did, handle in new_followers.items() %}
-            <div class="follower-item">
-                <img src="https://via.placeholder.com/40" alt="avatar">
-                <a href="https://bsky.app/profile/{{ handle }}" target="_blank">
-                    @{{ handle }}
-                </a>
-            </div>
-        {% endfor %}
-
-        {% if new_followers|length > 5 %}
-            <p>... and {{ new_followers|length - 5}} more</p>
+        <div class="follower-changes">
+            {% for did, handle in new_followers.items() %}
+                <div class="follower-item">
+                    <img src="https://via.placeholder.com/40" alt="avatar">
+                    <a href="https://bsky.app/profile/{{ handle }}" target="_blank">
+                        @{{ handle }}
+                    </a>
+                </div>
+            
+            {% endfor %}
+            
+            {% if new_followers|length > 5 %}
+                <p>... and {{ new_followers|length - 5}} more</p>
         {% endif %}
+        </div>
     </div>
 
     <div class="card" id="unfollows">
         <header class="stats-label">Unfollows</header>
-        {% for did, handle in unfollows.items() %}
-            <div class="follower-item">
-                <img src="https://via.placeholder.com/40" alt="avatar">
-                <a href="https://bsky.app/profile/{{ handle }}" target="_blank">
-                    @{{ handle }}
-                </a>
-            </div>
-        {% endfor %}
-        
-        {% if unfollows|length > 5 %}
-            <p>... and {{ unfollows|length - 5}} more</p>
-        {% endif %}
+        <div class="follower-changes">
+            {% for did, handle in unfollows.items() %}
+                <div class="follower-item">
+                    <img src="https://via.placeholder.com/40" alt="avatar">
+                    <a href="https://bsky.app/profile/{{ handle }}" target="_blank">
+                        @{{ handle }}
+                    </a>
+                </div>
+            {% endfor %}
+            
+            {% if unfollows|length > 5 %}
+                <p>... and {{ unfollows|length - 5}} more</p>
+            {% endif %}
+        </div>
     </div>
 </section>
 

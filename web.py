@@ -9,6 +9,7 @@ def dashboard():
     with Database() as db:
         stats = db.get_last_snapshot()
         new_followers, unfollows = db.get_follower_changes(stats['id'])
+        timeseries = db.get_snapshot_series()
         return render_template("dashboard.html",
                                 followers = stats["total_followers"],
                                 active = stats["active_count"],
@@ -17,7 +18,8 @@ def dashboard():
                                 handle = stats["account_handle"],
                                 last_updated = stats["timestamp"],
                                 new_followers = new_followers,
-                                unfollows = unfollows)
+                                unfollows = unfollows,
+                                timeseries = timeseries)
 
 
 @app.route("/snapshots")

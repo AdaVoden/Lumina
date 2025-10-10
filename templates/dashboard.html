@@ -2,7 +2,7 @@
 {% block body %}
 
 <section class="column">
-    <div class="card" id="stats-card">
+    <div class="card stats-card">
 
         <div class="stats" id="stat-followers">
             <h3 class="stats-label">Followers</h3>
@@ -41,12 +41,12 @@
             datasets: [{
                 label: 'Total Followers',
                 data: data.map(d => d.total_followers),
-                borderColor: 'rgb(75, 192, 192)',
+                borderColor: 'rgb(0, 0, 0)',
                 tension: 0.1
             }, {
                 label: 'Active Followers',
                 data: data.map(d => d.active_count),
-                borderColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(0, 255, 0)',
                 tension: 0.1
             }]
         },
@@ -63,11 +63,11 @@
 
 <section class="column">
     <div class="card" id="newfollowers">
-        <header class="stats-label">New Followers</header>
+        <header class="follower-label">New Followers</header>
         <div class="follower-changes">
             {% for did, handle in new_followers.items() %}
                 <div class="follower-item">
-                    <img src="https://via.placeholder.com/40" alt="avatar">
+                    <!-- <img src="https://via.placeholder.com/40" alt="avatar"> -->
                     <a href="https://bsky.app/profile/{{ handle }}" target="_blank">
                         @{{ handle }}
                     </a>
@@ -82,11 +82,11 @@
     </div>
 
     <div class="card" id="unfollows">
-        <header class="stats-label">Unfollows</header>
+        <header class="follower-label">Unfollows</header>
         <div class="follower-changes">
             {% for did, handle in unfollows.items() %}
                 <div class="follower-item">
-                    <img src="https://via.placeholder.com/40" alt="avatar">
+                    <!-- <img src="https://via.placeholder.com/40" alt="avatar"> -->
                     <a href="https://bsky.app/profile/{{ handle }}" target="_blank">
                         @{{ handle }}
                     </a>

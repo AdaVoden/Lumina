@@ -46,7 +46,7 @@
             }, {
                 label: 'Active Followers',
                 data: data.map(d => d.active_count),
-                borderColor: 'rgb(0, 255, 0)',
+                borderColor: 'rgb(74, 222, 128)',
                 tension: 0.1
             }]
         },
@@ -67,7 +67,7 @@
         <div class="follower-changes">
             {% for did, handle in new_followers.items() %}
                 <div class="follower-item">
-                    <!-- <img src="https://via.placeholder.com/40" alt="avatar"> -->
+                    <img src="https://ui-avatars.com/api/?name={{ handle }}&background=random" alt="avatar">
                     <a href="https://bsky.app/profile/{{ handle }}" target="_blank">
                         @{{ handle }}
                     </a>
@@ -76,7 +76,9 @@
             {% endfor %}
             
             {% if new_followers|length > 5 %}
-                <p>... and {{ new_followers|length - 5}} more</p>
+                <div class="more-container">
+                    <p class="more">... and {{ new_followers|length - 5}} more</p>
+                </div>
         {% endif %}
         </div>
     </div>
@@ -86,7 +88,7 @@
         <div class="follower-changes">
             {% for did, handle in unfollows.items() %}
                 <div class="follower-item">
-                    <!-- <img src="https://via.placeholder.com/40" alt="avatar"> -->
+                    <img src="https://ui-avatars.com/api/?name={{ handle }}&background=random" alt="avatar">
                     <a href="https://bsky.app/profile/{{ handle }}" target="_blank">
                         @{{ handle }}
                     </a>
@@ -94,7 +96,9 @@
             {% endfor %}
             
             {% if unfollows|length > 5 %}
-                <p>... and {{ unfollows|length - 5}} more</p>
+                <div class="more-container">
+                    <p class="more">... and {{ unfollows|length - 5}} more</p>
+                </div>
             {% endif %}
         </div>
     </div>

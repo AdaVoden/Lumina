@@ -22,6 +22,6 @@ def dashboard():
                                 timeseries = timeseries)
 
 
-@app.route("/snapshots")
-def snapshots():
-    pass
+# @app.route("/snapshots")
+# def snapshots():
+#     pass

@@ -131,11 +131,11 @@ class BlueskyService:
                 if progress_callback:
                     progress_callback(processed, len(all_followers))
 
-                if not followers.cursor:
-                    break
+            if not followers.cursor:
+                break
 
-                cursor = followers.cursor
-                time.sleep(config.RATE_LIMIT_DELAY)
+            cursor = followers.cursor
+            time.sleep(config.RATE_LIMIT_DELAY)
 
         return all_followers
 

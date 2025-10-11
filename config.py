@@ -1,3 +1,4 @@
+"""Application configuration loading and defaults"""
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 

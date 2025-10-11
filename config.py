@@ -6,9 +6,9 @@ class Config(BaseSettings):
     """Base configuration loader"""
 
     # Bluesky credentials (Required)
-    BSKY_HANDLE: str = Field(..., min_length=1, description="Bluesky handle for authentication with API")
-    BSKY_APP_PASSWORD: str = Field(..., min_length=1, description="Bluesky app password for API")
-    BSKY_TARGET_HANDLE: str = Field(..., min_length=1, description="Bluesky target handle to track")
+    BSKY_HANDLE: str
+    BSKY_APP_PASSWORD: str
+    BSKY_TARGET_HANDLE: str
     
     # API settings (with defaults)
     REPORT_LIMIT: int = Field(default=100, gt=0, le=100, description="Number of followers to fetch per request")

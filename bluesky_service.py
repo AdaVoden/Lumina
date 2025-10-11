@@ -78,16 +78,73 @@ class BlueskyService:
 
     def get_last_post(self, did: str) -> Optional[str]:
         """Get the timestamp of the last post for a DID"""
-        pass
+        try:
+            params = models.AppBskyFeedGetAuthorFeed.Params(actor=did, filter=None, limit=1)
+            feed = self.client.app.bsky.feed.get_author_feed(params)
 
+            if feed and feed.feed:
+                return feed.feed[0].post.indexed_at
+            return None
+        except Exception as e:
+            logger.debug(f"Error getting last post for {did}: {e}")
+            return None
+    
     def get_followers(self, did: str, cursor: Optional[str] = None, limit: int = 100):
         """Get followers for a DID with optional cursor for pagination"""
-        pass
+        try:
+            params = models.AppBskyGraphGetFollowers.Params( actor = did, 
+                                                            cursor=cursor,
+                                                             limit = limit )
+            return self.client.app.bsky.graph.get_followers(params)
+        except Exception as e:
+            logger.error(f"Failed to get followers for {did}: {e}")
+            raise
 
     def fetch_all_followers(self, did: str, progress_callback=None) -> list[FollowerData]:
         """Fetch all followers for a DID with progress tracking"""
-        pass
+        all_followers = []
+        cursor = None
+        processed = 0
+         
+        while True:
+            try:
+                # If we can't get the followers there's no work to do
+                followers = self.get_followers(did, cursor, config.REPORT_LIMIT)
+            except Exception as e:
+                logger.error(f"Failed to fetch followers: {e}")
+                break
+
+            processed += config.REPORT_LIMIT
+
+            for follower in followers.followers:
+                last_posted_at = self.get_last_post(follower.did)
+                
+                follower_data = FollowerData(
+                    did=follower.did,
+                    handle=follower.handle,
+                    display_name=follower.display_name,
+                    last_posted_at=last_posted_at
+                )
+
+                all_followers.append(follower_data)
+
+                if progress_callback:
+                    progress_callback(processed, len(all_followers))
+
+                if not followers.cursor:
+                    break
+
+                cursor = followers.cursor
+                time.sleep(config.RATE_LIMIT_DELAY)
+
+        return all_followers
 
 def is_active_in_window(last_posted_at: Optional[str], days: int = 31) -> bool:
     """Check if account posted within specified day window"""
-    pass
+    if not last_posted_at:
+        return False
+    
+    posted_at = datetime.fromisoformat(last_posted_at)
+    # Date specified number of days in the past
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    return posted_at > cutoff

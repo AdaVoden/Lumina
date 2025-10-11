@@ -11,7 +11,7 @@ HANDLE = os.getenv("BSKY_HANDLE")
 APP_PASS = os.getenv("BSKY_APP_PASSWORD")
 TARGET_HANDLE = os.getenv("BSKY_TARGET_HANDLE")
 
-REPORT_LIMIT = 25
+REPORT_LIMIT = 100
 
 client = Client()
 client.login(login=HANDLE, password=APP_PASS)

@@ -60,12 +60,13 @@ class SnapshotService:
     def generate_report(
             self,
             snapshot_id: int,
+            account_handle: str,
             stats: FollowerStats,
             follows_count: int
     ) -> Optional[SnapshotReport]:
         """Generate a report comparing this snapshot to the previous one"""
         try:
-            new_followers, unfollows = self.db.get_follower_changes(snapshot_id)
+            new_followers, unfollows = self.db.get_follower_changes(snapshot_id, account_handle)
 
             return SnapshotReport(
                 stats=stats,

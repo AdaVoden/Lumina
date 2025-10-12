@@ -48,7 +48,12 @@ class Database():
         self.conn.commit()
         self.conn.close()
 
-    def create_snapshot(self, account_handle, total_followers, active_count, never_posted_count, disabled_count):
+    def create_snapshot(self, 
+                        account_handle: str, 
+                        total_followers: int, 
+                        active_count: int, 
+                        never_posted_count: int, 
+                        disabled_count: int):
         self.cur.execute("""
                     INSERT INTO snapshots (account_handle, total_followers, active_count, never_posted_count, disabled_count)
                     VALUES (?, ?, ?, ?, ?)
@@ -57,16 +62,16 @@ class Database():
         self.conn.commit()
         return self.cur.lastrowid
     
-    def get_follower_changes(self, snapshot_id):
+    def get_follower_changes(self, snapshot_id: int, account_handle: str):
         """Compare current snapshot to previous snapshot"""
         cur = self.cur
 
         cur.execute("""
                     SELECT id FROM snapshots
-                    WHERE id < ?
+                    WHERE id < ? AND account_handle = ?
                     ORDER BY id DESC
                     LIMIT 1
-                    """, (snapshot_id,))
+                    """, (snapshot_id, account_handle,))
         
         prev_snapshot = cur.fetchone()
         # If there is no previous snapshot, return nothing
@@ -93,7 +98,12 @@ class Database():
 
         return new_followers, unfollowed
 
-    def add_follower(self, snapshot_id, did, handle, last_posted_at, display_name):
+    def add_follower(self, 
+                     snapshot_id: int | None, 
+                     did: str, 
+                     handle: str, 
+                     last_posted_at: str | None, 
+                     display_name: str | None):
         self.cur.execute("""
             INSERT INTO snapshot_followers (snapshot_id, did, handle, last_posted_at, display_name)
             VALUES (?, ?, ?, ?, ?)
@@ -114,7 +124,7 @@ class Database():
         return self.cur.fetchone()[0]
 
         
-    def get_recent_snapshots(self, limit=30):
+    def get_recent_snapshots(self, limit: int = 30):
         self.cur.execute("""
                     SELECT id, timestamp, account_handle, total_followers, active_count, never_posted_count, disabled_count
                     FROM snapshots
@@ -135,7 +145,9 @@ class Database():
             for r in rows
         ]
 
-    def get_snapshot_followers(self, snapshot_id, limit=200, offset=0):
+    def get_snapshot_followers(self, 
+                               snapshot_id: int, limit: int = 200, 
+                               offset: int = 0):
         self.cur.execute("""
                         SELECT did, handle, last_posted_at, display_name
                         FROM snapshot_followers
@@ -149,7 +161,7 @@ class Database():
             for r in rows
         ]
 
-    def get_snapshot_series(self, limit=100):
+    def get_snapshot_series(self, account_handle: str, limit: int = 100):
         """Return chronological series for charing: oldest->newest."""
         self.cur.execute("""
             SELECT 
@@ -157,8 +169,9 @@ class Database():
                          total_followers, 
                          active_count
             FROM snapshots
+            WHERE account_handle = ?
             ORDER BY timestamp ASC
             LIMIT ?                 
-        """, (limit,))
+        """, (account_handle, limit,))
         rows = self.cur.fetchall()
         return [{"timestamp": r[0], "total_followers": r[1], "active_count": r[2]} for r in rows]

@@ -8,8 +8,8 @@ app = Flask(__name__, template_folder="templates", static_folder="static")
 def dashboard():
     with Database() as db:
         stats = db.get_last_snapshot()
-        new_followers, unfollows = db.get_follower_changes(stats['id'])
-        timeseries = db.get_snapshot_series()
+        new_followers, unfollows = db.get_follower_changes(stats['id'], stats["account_handle"])
+        timeseries = db.get_snapshot_series(stats["account_handle"])
         return render_template("dashboard.html",
                                 followers = stats["total_followers"],
                                 active = stats["active_count"],

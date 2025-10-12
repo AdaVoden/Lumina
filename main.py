@@ -79,6 +79,7 @@ def main():
         logger.info("Generating report")
         report = snapshot_service.generate_report(
             snapshot_id,
+            config.BSKY_TARGET_HANDLE,
             stats,
             profile.follows_count
         )

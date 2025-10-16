@@ -122,7 +122,7 @@ NEW FOLLOWERS (12)
 
 1. **Start the web server:**
    ```bash
-   python web.py
+   flask --app web run
    ```
 
 2. **Open your browser** to `http://localhost:5000`
